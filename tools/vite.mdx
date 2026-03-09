@@ -1,0 +1,364 @@
+---
+title: 'Vite'
+description: 'Fast and modern frontend build tool setup guide'
+icon: 'bolt'
+---
+
+Vite is a modern, fast build tool for frontend development with instant server start and lightning-fast hot module replacement (HMR).
+
+<Note>
+Official documentation: [vite.dev](https://vite.dev/)
+</Note>
+
+## Prerequisites
+
+Before using Vite, ensure Node.js is installed on your system.
+
+```bash Check Node.js installation
+node -v
+```
+
+If Node.js is not installed, download it from [nodejs.org](https://nodejs.org/).
+
+## Installation Methods
+
+<Tabs>
+  <Tab title="npm (Global)">
+    Install Vite globally on your system.
+    
+    ```bash Install globally
+    npm install -g vite
+    ```
+    
+    <Info>
+    Global installation allows you to use Vite commands from anywhere, but project-specific versions are recommended for consistency.
+    </Info>
+  </Tab>
+  
+  <Tab title="npx (Temporary)">
+    Use npx to create projects without global installation.
+    
+    ```bash Create project with npx
+    npm create vite@latest
+    ```
+    
+    <Tip>
+    This is the recommended approach. npx downloads and runs the latest version temporarily, ensuring you always use the most current release.
+    </Tip>
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+<Steps>
+  <Step title="Create Project">
+    Use the Vite project creator to scaffold a new application.
+    
+    ```bash Create Vite project
+    npm create vite@latest
+    ```
+    
+    You'll be prompted to:
+    - Choose a project name
+    - Select a framework (React, Vue, Svelte, etc.)
+    - Choose a variant (JavaScript, TypeScript, etc.)
+  </Step>
+  
+  <Step title="Navigate to Project">
+    ```bash Enter project directory
+    cd your-project-name
+    ```
+  </Step>
+  
+  <Step title="Install Dependencies">
+    ```bash Install packages
+    npm install
+    ```
+  </Step>
+  
+  <Step title="Start Development Server">
+    ```bash Run development server
+    npm run dev
+    ```
+    
+    Your application will be available at `http://localhost:5173` (default port).
+  </Step>
+</Steps>
+
+## Common Commands
+
+| Command | Description |
+|---------|-------------|
+| `node -v` | Check if Node.js is installed |
+| `npm` | Install packages globally |
+| `npx` | Create project temporarily without global install |
+| `npm install -g vite` | Install Vite globally |
+| `npm create vite@latest` | Create a new Vite project |
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build locally |
+
+## Project Structure
+
+A typical Vite project structure:
+
+```
+my-vite-app/
+├── node_modules/
+├── public/              # Static assets
+├── src/
+│   ├── assets/         # Images, fonts, etc.
+│   ├── components/     # Reusable components
+│   ├── App.jsx         # Main app component
+│   └── main.jsx        # Entry point
+├── index.html          # HTML entry
+├── package.json        # Dependencies and scripts
+├── vite.config.js      # Vite configuration
+└── .gitignore
+```
+
+## Configuration
+
+<Accordion title="Basic vite.config.js">
+```javascript vite.config.js
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    port: 3000,              // Custom port
+    open: true,              // Auto-open browser
+  },
+  build: {
+    outDir: 'dist',          // Output directory
+    sourcemap: true,         // Generate sourcemaps
+  }
+})
+```
+</Accordion>
+
+<Accordion title="Path Aliases">
+```javascript vite.config.js with aliases
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@assets': path.resolve(__dirname, './src/assets'),
+    }
+  }
+})
+```
+
+Now you can import with clean paths:
+```javascript
+import Button from '@components/Button'
+import logo from '@assets/logo.svg'
+```
+</Accordion>
+
+## Development Workflow
+
+<CodeGroup>
+```bash Start development
+npm run dev
+```
+
+```bash Build for production
+npm run build
+```
+
+```bash Preview production build
+npm run preview
+```
+
+```bash Run linter
+npm run lint
+```
+</CodeGroup>
+
+## Framework-Specific Setup
+
+<Tabs>
+  <Tab title="React">
+    ```bash Create React project
+    npm create vite@latest my-react-app -- --template react
+    cd my-react-app
+    npm install
+    npm run dev
+    ```
+    
+    For TypeScript:
+    ```bash
+    npm create vite@latest my-react-app -- --template react-ts
+    ```
+  </Tab>
+  
+  <Tab title="Vue">
+    ```bash Create Vue project
+    npm create vite@latest my-vue-app -- --template vue
+    cd my-vue-app
+    npm install
+    npm run dev
+    ```
+    
+    For TypeScript:
+    ```bash
+    npm create vite@latest my-vue-app -- --template vue-ts
+    ```
+  </Tab>
+  
+  <Tab title="Svelte">
+    ```bash Create Svelte project
+    npm create vite@latest my-svelte-app -- --template svelte
+    cd my-svelte-app
+    npm install
+    npm run dev
+    ```
+    
+    For TypeScript:
+    ```bash
+    npm create vite@latest my-svelte-app -- --template svelte-ts
+    ```
+  </Tab>
+  
+  <Tab title="Vanilla JS">
+    ```bash Create vanilla JavaScript project
+    npm create vite@latest my-vanilla-app -- --template vanilla
+    cd my-vanilla-app
+    npm install
+    npm run dev
+    ```
+    
+    For TypeScript:
+    ```bash
+    npm create vite@latest my-vanilla-app -- --template vanilla-ts
+    ```
+  </Tab>
+</Tabs>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Lightning Fast" icon="bolt">
+    Instant server start and ultra-fast Hot Module Replacement (HMR) regardless of app size.
+  </Card>
+  
+  <Card title="Optimized Builds" icon="box">
+    Production builds use Rollup for highly optimized static assets with automatic code splitting.
+  </Card>
+  
+  <Card title="Rich Features" icon="star">
+    TypeScript, JSX, CSS, and more work out of the box with no configuration needed.
+  </Card>
+  
+  <Card title="Framework Agnostic" icon="layer-group">
+    First-class support for React, Vue, Svelte, and vanilla JavaScript/TypeScript.
+  </Card>
+</CardGroup>
+
+## Environment Variables
+
+Vite exposes environment variables through `import.meta.env`.
+
+<Accordion title="Using Environment Variables">
+Create `.env` files in your project root:
+
+```bash .env
+VITE_API_URL=https://api.example.com
+VITE_APP_TITLE=My App
+```
+
+<Warning>
+Only variables prefixed with `VITE_` are exposed to your client-side code for security reasons.
+</Warning>
+
+Access in your code:
+```javascript
+const apiUrl = import.meta.env.VITE_API_URL
+const appTitle = import.meta.env.VITE_APP_TITLE
+const isDev = import.meta.env.DEV
+const isProd = import.meta.env.PROD
+```
+
+Different environment files:
+- `.env` - Loaded in all cases
+- `.env.local` - Loaded in all cases, ignored by git
+- `.env.[mode]` - Only loaded in specified mode (e.g., `.env.production`)
+- `.env.[mode].local` - Only loaded in specified mode, ignored by git
+</Accordion>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Port Already in Use">
+    If port 5173 is already in use, Vite will automatically try the next available port. To specify a custom port:
+    
+    ```javascript vite.config.js
+    export default defineConfig({
+      server: {
+        port: 3000
+      }
+    })
+    ```
+    
+    Or run with CLI flag:
+    ```bash
+    npm run dev -- --port 3000
+    ```
+  </Accordion>
+  
+  <Accordion title="Module Not Found Errors">
+    Ensure all dependencies are installed:
+    ```bash
+    npm install
+    ```
+    
+    Clear cache and reinstall:
+    ```bash
+    rm -rf node_modules package-lock.json
+    npm install
+    ```
+  </Accordion>
+  
+  <Accordion title="Slow HMR Performance">
+    If HMR becomes slow in large projects:
+    - Reduce the number of files being watched
+    - Use path aliases to optimize imports
+    - Check for circular dependencies
+    - Consider splitting large components
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use npx" icon="download">
+    Always use `npm create vite@latest` to ensure you're using the latest version.
+  </Card>
+  
+  <Card title="Environment Variables" icon="key">
+    Prefix environment variables with `VITE_` and never commit `.env` files with secrets.
+  </Card>
+  
+  <Card title="Path Aliases" icon="route">
+    Configure path aliases to avoid deep relative imports like `../../../components/Button`.
+  </Card>
+  
+  <Card title="Build Analysis" icon="chart-bar">
+    Regularly analyze your production bundle size to catch bloat early.
+  </Card>
+</CardGroup>
+
+## Resources
+
+- [Official Documentation](https://vite.dev/)
+- [GitHub Repository](https://github.com/vitejs/vite)
+- [Plugin Directory](https://vitejs.dev/plugins/)
+- [Community Chat](https://chat.vitejs.dev/)

@@ -1,0 +1,291 @@
+---
+title: 'HTML - Less Obvious Elements'
+description: 'Useful HTML elements that are often overlooked but powerful for everyday development'
+icon: 'code'
+---
+
+HTML elements that are less commonly discussed but extremely useful for day-to-day development, including `<details>`, `<dialog>`, `<progress>`, `<meter>`, and more.
+
+## Interactive Elements
+
+### `<details>` and `<summary>`
+
+Creates a native HTML collapsible accordion without JavaScript. The `<summary>` is the clickable title; the rest inside `<details>` is the hidden content.
+
+<CodeGroup>
+```html Basic Usage
+<details>
+  <summary>Click here</summary>
+  <p>Hidden content</p>
+</details>
+```
+
+```html Open by Default
+<details open>
+  <summary>Expand to see more</summary>
+  <p>This is expanded by default thanks to the 'open' attribute.</p>
+</details>
+```
+</CodeGroup>
+
+<Info>
+The `open` attribute makes the element start in an expanded state.
+</Info>
+
+### `<dialog>`
+
+Native HTML modal controlled via JavaScript with `.showModal()` and `.close()`. The `open` attribute displays it inline (without backdrop).
+
+```html
+<dialog id="modal">
+  <p>Modal content</p>
+  <button onclick="modal.close()">Close</button>
+</dialog>
+
+<button onclick="document.getElementById('modal').showModal()">
+  Open Modal
+</button>
+
+<style>
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+</style>
+```
+
+<Note>
+When opened with `.showModal()`, it automatically creates a backdrop that can be styled via `::backdrop` CSS pseudo-element.
+</Note>
+
+## Form Elements
+
+### `<datalist>`
+
+Adds autocomplete suggestions to an `<input>`. The user can still type freely — it's not a required select.
+
+```html
+<input list="frutas" placeholder="Type a fruit..." />
+
+<datalist id="frutas">
+  <option value="Apple" />
+  <option value="Banana" />
+  <option value="Mango" />
+  <option value="Strawberry" />
+  <option value="Watermelon" />
+</datalist>
+```
+
+<Tip>
+Linked to the input via the `list` attribute that points to the datalist's `id`.
+</Tip>
+
+## Progress Indicators
+
+### `<progress>` and `<meter>`
+
+<Tabs>
+  <Tab title="progress">
+    Progress bar for a task. Use `value` and `max`. Without `value`, it stays in an indeterminate state (animated).
+
+    ```html
+    <!-- Determinate progress -->
+    <progress value="70" max="100"></progress>
+
+    <!-- Indeterminate (loading) -->
+    <progress></progress>
+    ```
+  </Tab>
+  
+  <Tab title="meter">
+    Represents a value within a known range (e.g., disk usage). Changes color based on `low`, `high`, and `optimum` values.
+
+    ```html
+    <meter value="0.8" low="0.3" high="0.7" optimum="0.5"></meter>
+    <!-- Shows red because value exceeds optimum range -->
+
+    <meter value="0.5" low="0.3" high="0.7" optimum="0.5"></meter>
+    <!-- Shows green because value is at optimum -->
+    ```
+  </Tab>
+</Tabs>
+
+## Semantic Text Tags
+
+<AccordionGroup>
+  <Accordion title="<abbr> - Abbreviations">
+    Abbreviation with tooltip on hover (via `title` attribute).
+
+    ```html
+    <abbr title="HyperText Markup Language">HTML</abbr>
+    ```
+  </Accordion>
+
+  <Accordion title="<time> - Date and Time">
+    Machine-readable date/time via the `datetime` attribute.
+
+    ```html
+    <time datetime="2025-01-01">January 1st, 2025</time>
+    ```
+  </Accordion>
+
+  <Accordion title="<mark> - Highlighted Text">
+    Highlights text with yellow background (relevance/search results).
+
+    ```html
+    Search result with <mark>highlighted</mark> term.
+    ```
+  </Accordion>
+
+  <Accordion title="<kbd> - Keyboard Input">
+    Represents a keyboard key.
+
+    ```html
+    Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.
+    ```
+  </Accordion>
+
+  <Accordion title="<sub> / <sup> - Subscript and Superscript">
+    Subscript and superscript text.
+
+    ```html
+    H<sub>2</sub>O
+    x<sup>2</sup>
+    ```
+  </Accordion>
+
+  <Accordion title="<del> / <ins> - Deletions and Insertions">
+    Semantically marked deleted (strikethrough) and inserted (underlined) text.
+
+    ```html
+    <del>$99.90</del> <ins>$59.90</ins>
+    ```
+  </Accordion>
+
+  <Accordion title="<figure> / <figcaption> - Figures with Captions">
+    Wraps images, charts, or code blocks with a semantic caption.
+
+    ```html
+    <figure>
+      <img src="photo.jpg" alt="Landscape" />
+      <figcaption>Beautiful mountain landscape</figcaption>
+    </figure>
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Input Types Reference
+
+The `type` attribute completely changes the behavior and appearance of inputs — validation, mobile keyboard, native browser UI.
+
+<Tabs>
+  <Tab title="Text Inputs">
+    <CodeGroup>
+    ```html text
+    <input type="text" placeholder="Enter text..." />
+    <!-- Free text. Default when type is omitted. -->
+    ```
+
+    ```html password
+    <input type="password" placeholder="••••••••" />
+    <!-- Hides typed characters. -->
+    ```
+
+    ```html email
+    <input type="email" placeholder="you@email.com" />
+    <!-- Validates email format natively. Mobile keyboard includes @. -->
+    ```
+
+    ```html search
+    <input type="search" placeholder="Search..." />
+    <!-- Like text, but browser adds a clear button (×). -->
+    ```
+
+    ```html tel
+    <input type="tel" placeholder="(11) 99999-9999" />
+    <!-- Doesn't validate format, but opens numeric keyboard on mobile. -->
+    ```
+
+    ```html url
+    <input type="url" placeholder="https://example.com" />
+    <!-- Validates URL format (needs http/https). -->
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Numbers & Ranges">
+    <CodeGroup>
+    ```html number
+    <input type="number" min="0" max="100" step="5" />
+    <!-- Numbers only. Supports min, max, and step. -->
+    ```
+
+    ```html range
+    <input type="range" min="0" max="100" value="40" />
+    <!-- Slider for range selection. -->
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Date & Time">
+    <CodeGroup>
+    ```html date
+    <input type="date" />
+    <!-- Native date picker from browser. -->
+    ```
+
+    ```html time
+    <input type="time" />
+    <!-- Native time picker (hh:mm). -->
+    ```
+    </CodeGroup>
+  </Tab>
+
+  <Tab title="Other">
+    <CodeGroup>
+    ```html color
+    <input type="color" value="#ec4899" />
+    <!-- Native color picker. Returns hexadecimal value. -->
+    ```
+
+    ```html file
+    <input type="file" accept="image/*" multiple />
+    <!-- File upload. Use 'accept' to filter types and 'multiple' for multiple files. -->
+    ```
+
+    ```html checkbox
+    <label>
+      <input type="checkbox" checked /> Option A
+</label>
+<!-- Checkbox. 'checked' sets initial state. Can have multiple with same name. -->
+    ```
+
+    ```html radio
+    <label><input type="radio" name="group" value="a" /> Option A</label>
+    <label><input type="radio" name="group" value="b" /> Option B</label>
+    <!-- Single selection within a group. Same 'name' = same group. -->
+    ```
+
+    ```html hidden
+    <input type="hidden" name="user_id" value="42" />
+    <!-- Invisible to user. Used to send extra data with form (e.g., IDs, tokens). -->
+    ```
+    </CodeGroup>
+  </Tab>
+</Tabs>
+
+## Useful Input Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `required` | Makes the field mandatory — form won't submit without it filled. |
+| `disabled` | Disables the field — can't be edited or submitted in form. |
+| `readonly` | Field is visible and submitted in form, but not editable by user. |
+| `placeholder` | Hint text displayed when field is empty. |
+| `autofocus` | Automatically focuses this field when page loads. |
+| `pattern` | Validates value with regular expression. E.g., `pattern="[0-9]{5}"` for ZIP code. |
+| `maxlength` / `minlength` | Limits max/min number of allowed characters. |
+| `autocomplete` | Controls browser autofill. E.g., `"off"`, `"email"`, `"new-password"`. |
+
+<Warning>
+Never rely solely on client-side validation. Always validate on the server as well.
+</Warning>

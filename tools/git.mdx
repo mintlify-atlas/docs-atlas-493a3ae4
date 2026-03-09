@@ -1,0 +1,209 @@
+---
+title: 'Git & GitHub'
+description: 'Complete guide to Git version control commands and workflows'
+icon: 'git-alt'
+---
+
+A comprehensive reference for Git commands organized by workflow. Master version control from initial setup through advanced branch management.
+
+## Configuration
+
+<Accordion title="Initial Configuration">
+Set up your Git identity before making any commits.
+
+| Command | Description |
+|---------|-------------|
+| `git config --global user.name "Nome"` | Define the global username |
+| `git config --global user.email "email"` | Define the global email address |
+
+<Tip>
+These settings are stored globally and apply to all repositories on your machine unless overridden locally.
+</Tip>
+</Accordion>
+
+## Repository
+
+Commands for initializing and connecting repositories.
+
+| Command | Description |
+|---------|-------------|
+| `git init` | Initialize a Git repository in the current folder |
+| `git clone <url>` | Copy a remote repository to your local machine |
+| `git remote add origin <url>` | Link the local repository to a remote repository on GitHub |
+
+<CodeGroup>
+```bash Start a new repository
+git init
+git remote add origin https://github.com/username/repo.git
+```
+
+```bash Clone existing repository
+git clone https://github.com/username/repo.git
+cd repo
+```
+</CodeGroup>
+
+## Daily Workflow
+
+Essential commands for everyday Git usage.
+
+| Command | Description |
+|---------|-------------|
+| `git status` | Show which files were modified, added, or removed |
+| `git add <arquivo>` | Add a specific file to staging area (prepared for commit) |
+| `git add .` | Add all modified files to staging at once |
+| `git commit -m "mensagem"` | Save a snapshot of staged changes with a descriptive message |
+| `git push` | Send local commits to the remote repository on GitHub |
+| `git push -u origin main` | Send and set the default remote branch (required first time) |
+| `git pull` | Download and integrate changes from remote repository into current branch |
+| `git fetch` | Download remote changes without integrating them — only updates references |
+
+<Accordion title="Typical Daily Workflow">
+```bash Check status
+git status
+```
+
+```bash Stage and commit changes
+git add .
+git commit -m "Add new feature"
+```
+
+```bash Push to remote
+git push
+```
+
+```bash Pull latest changes
+git pull
+```
+</Accordion>
+
+## Branches
+
+Work on features in isolation and merge them when ready.
+
+| Command | Description |
+|---------|-------------|
+| `git branch` | List all local branches and indicate the current one |
+| `git branch <nome>` | Create a new branch without switching to it |
+| `git checkout <nome>` | Switch to the specified branch |
+| `git checkout -b <nome>` | Create a new branch and switch to it at the same time |
+| `git merge <branch>` | Merge changes from specified branch into current branch |
+| `git branch -d <nome>` | Delete the local branch after it has been merged |
+
+<Tabs>
+  <Tab title="Feature Branch Workflow">
+    ```bash Create and switch to new branch
+    git checkout -b feature/new-feature
+    ```
+
+    ```bash Work on feature
+    git add .
+    git commit -m "Implement feature"
+    ```
+
+    ```bash Merge back to main
+    git checkout main
+    git merge feature/new-feature
+    ```
+
+    ```bash Delete feature branch
+    git branch -d feature/new-feature
+    ```
+  </Tab>
+  
+  <Tab title="Quick Branch Switch">
+    ```bash List all branches
+    git branch
+    ```
+
+    ```bash Switch branches
+    git checkout main
+    git checkout develop
+    ```
+
+    ```bash Create and switch
+    git checkout -b hotfix/urgent-fix
+    ```
+  </Tab>
+</Tabs>
+
+## History and Inspection
+
+Review your project's commit history and changes.
+
+| Command | Description |
+|---------|-------------|
+| `git log` | Display complete commit history of current branch |
+| `git log --oneline` | Display summarized history, one commit per line |
+| `git diff` | Show differences between modified files and last commit |
+
+<CodeGroup>
+```bash Full log
+git log
+```
+
+```bash Compact log
+git log --oneline
+```
+
+```bash View changes
+git diff
+```
+
+```bash View staged changes
+git diff --staged
+```
+</CodeGroup>
+
+## Undoing Changes
+
+Revert or discard unwanted changes safely.
+
+| Command | Description |
+|---------|-------------|
+| `git restore <arquivo>` | Discard changes in a file, reverting to last commit |
+| `git restore --staged <arquivo>` | Remove a file from staging without discarding changes |
+| `git revert <hash>` | Create a new commit undoing changes from a specific commit |
+| `git stash` | Temporarily save uncommitted changes to clean the workspace |
+
+<Warning>
+Avoid using `git reset --hard` on shared branches — it rewrites history and can cause conflicts for the team.
+</Warning>
+
+<Accordion title="Stash Workflow">
+```bash Save work in progress
+git stash
+```
+
+```bash List stashed changes
+git stash list
+```
+
+```bash Apply latest stash
+git stash pop
+```
+
+```bash Apply specific stash
+git stash apply stash@{0}
+```
+</Accordion>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Commit Messages" icon="message">
+    Write clear, descriptive commit messages that explain why changes were made, not just what changed.
+  </Card>
+  
+  <Card title="Commit Often" icon="clock">
+    Make small, frequent commits rather than large, infrequent ones. Easier to track and revert if needed.
+  </Card>
+  
+  <Card title="Pull Before Push" icon="download">
+    Always pull the latest changes before pushing to avoid conflicts and merge issues.
+  </Card>
+  
+  <Card title="Branch Strategy" icon="code-branch">
+    Use branches for features, fixes, and experiments. Keep main/master branch stable and deployable.
+  </Card>
+</CardGroup>

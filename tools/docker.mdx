@@ -1,0 +1,639 @@
+---
+title: 'Docker'
+description: 'Complete Docker reference for containers, images, volumes, and orchestration'
+icon: 'docker'
+---
+
+Docker is an application packager that enables you to run applications in isolated containers with all their dependencies.
+
+## Quick Reference
+
+Common Docker commands for daily use.
+
+| Command | What it does |
+|---------|-------------|
+| `docker run -d -p 8080:80 --name c nginx` | Create and start container |
+| `docker ps` / `docker ps -a` | List running / all containers |
+| `docker stop / start / restart c` | Stop / start / restart container |
+| `docker rm -f c` | Force remove container |
+| `docker logs -f c` | Follow logs in real-time |
+| `docker exec -it c bash` | Open terminal in container |
+| `docker images` | List local images |
+| `docker pull nginx:alpine` | Download image from Docker Hub |
+| `docker build -t app:1.0 .` | Build image from Dockerfile |
+| `docker rmi nginx` | Remove image |
+| `docker volume ls / rm / prune` | List / remove / clean volumes |
+| `docker network ls / create / rm` | Manage networks |
+| `docker compose up -d` | Start all services |
+| `docker compose down` | Stop all services |
+| `docker compose logs -f app` | Service logs |
+| `docker compose exec db psql ...` | Execute command in service |
+| `docker system df` | Space used by Docker |
+| `docker system prune -a` | General cleanup |
+
+## Core Concepts
+
+<CardGroup cols={2}>
+  <Card title="Docker" icon="box">
+    Application packager that bundles code and dependencies into portable containers.
+  </Card>
+  
+  <Card title="Image" icon="image">
+    Template for a container. Defines structure once and use multiple times easily. Stored locally or on hub.docker.com.
+  </Card>
+  
+  <Card title="Container" icon="server">
+    Running instance of an image. The actual process/execution on the system. Multiple containers can run from the same image. Data is not stored (lost when container stops).
+  </Card>
+  
+  <Card title="Volume" icon="database">
+    Where data persists in Docker. Stores data outside the container so it survives restarts.
+  </Card>
+</CardGroup>
+
+### Dockerfile
+
+A file containing instructions for building an image. Replaces manual command-line work.
+
+## Docker Run
+
+Downloads image, creates and starts a container.
+
+<Accordion title="Docker Run Flags">
+| Flag | What it does |
+|------|-------------|
+| `-d` (--detach) | Runs in background. Without this, terminal is locked to container. |
+| `-p HOST:CONTAINER` | Maps ports. Ex: `-p 8080:80` — port 8080 on your PC routes to 80 in container. |
+| `--name NOME` | Gives container a name. Makes it easier to reference later. |
+| `-e VAR=VALOR` | Sets environment variable inside container.<br/>Ex: `-e POSTGRES_USER=myuser -e POSTGRES_PASSWORD=mypass123` |
+| `-v ORIGEM:DESTINO` | Mounts a volume — connects host folder with container folder.<br/>Ex: `-v postgres-data:/var/lib/postgresql/data` |
+| `--rm` | Removes container automatically when it stops. |
+| `-it` | Interactive mode with terminal. Use to enter the container. |
+| `--network REDE` | Connects container to a specific network. |
+| `--restart always` | Restarts container automatically if it stops or host reboots. |
+
+<Info>
+At the end of the command, specify the image to use (e.g., `nginx`, `postgres:15`, `node:20-alpine`).
+</Info>
+</Accordion>
+
+<CodeGroup>
+```bash Run nginx web server
+docker run -d -p 8080:80 --name web nginx
+```
+
+```bash Run PostgreSQL with volume
+docker run -d \
+  --name postgres \
+  -e POSTGRES_PASSWORD=senha \
+  -v dados-postgres:/var/lib/postgresql/data \
+  postgres:15
+```
+
+```bash Interactive shell
+docker run -it --rm ubuntu bash
+```
+</CodeGroup>
+
+## Managing Containers
+
+<Accordion title="Daily Commands">
+```bash List containers
+# Running containers
+docker ps
+
+# All containers (including stopped)
+docker ps -a
+
+# Custom format (more readable)
+docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
+```
+
+```bash Start / Stop
+# Stop gracefully (sends SIGTERM, waits 10s, then SIGKILL)
+docker stop meu-nginx
+
+# Stop immediately (SIGKILL direct — use only if necessary)
+docker kill meu-nginx
+
+# Start stopped container
+docker start meu-nginx
+
+# Restart
+docker restart meu-nginx
+```
+
+```bash Remove
+# Remove stopped container
+docker rm meu-nginx
+
+# Force remove running container
+docker rm -f meu-nginx
+
+# Remove all stopped containers
+docker container prune
+```
+
+```bash Logs
+# View all logs
+docker logs meu-nginx
+
+# Follow logs in real-time (like tail -f)
+docker logs -f meu-nginx
+
+# View only last 50 lines
+docker logs --tail 50 meu-nginx
+
+# Logs with timestamp
+docker logs -t meu-nginx
+```
+
+```bash Enter container
+# Open bash terminal in container
+docker exec -it meu-nginx bash
+
+# If image doesn't have bash, try sh
+docker exec -it meu-nginx sh
+
+# Execute single command without entering
+docker exec meu-nginx ls /var/www/html
+```
+
+```bash Inspect
+# Detailed container information (JSON)
+docker inspect meu-nginx
+
+# View CPU, memory and network usage in real-time
+docker stats
+
+# Stats for specific container
+docker stats meu-nginx
+```
+</Accordion>
+
+## Managing Images
+
+```bash List and pull
+# List locally downloaded images
+docker images
+
+# Download image without creating container
+docker pull postgres:15
+docker pull node:20-alpine
+
+# Remove an image
+docker rmi nginx
+
+# Remove unused images (dangling)
+docker image prune
+
+# Remove ALL unused images
+docker image prune -a
+
+# Search for image on Docker Hub via terminal
+docker search postgres
+```
+
+## Volumes
+
+<Accordion title="Volume Types">
+| Type | When to use |
+|------|-------------|
+| **Named Volume** (recommended) | Managed by Docker. Located in /var/lib/docker/volumes/. Best for databases. |
+| **Bind Mount** | Connects specific host folder to container. Ideal for development (see changes live). |
+| **tmpfs Mount** | Storage in RAM memory. Temporary, very fast. For sensitive data in memory. |
+</Accordion>
+
+<Accordion title="Named Volumes in Practice">
+```bash Create and use volumes
+# Create a volume manually
+docker volume create dados-postgres
+
+# List volumes
+docker volume ls
+
+# Inspect a volume (see physical location, etc)
+docker volume inspect dados-postgres
+
+# Use the volume in container
+docker run -d \
+  --name postgres \
+  -v dados-postgres:/var/lib/postgresql/data \
+  -e POSTGRES_PASSWORD=senha \
+  postgres:15
+
+# If you remove and recreate container, data persists!
+docker rm -f postgres
+docker run -d \
+  --name postgres \
+  -v dados-postgres:/var/lib/postgresql/data \
+  -e POSTGRES_PASSWORD=senha \
+  postgres:15
+# Data is still there!
+```
+
+<Warning>
+Removing a volume deletes all data permanently!
+</Warning>
+
+```bash Remove volumes
+# Remove a volume (CAREFUL: deletes data!)
+docker volume rm dados-postgres
+
+# Remove unused volumes
+docker volume prune
+```
+</Accordion>
+
+<Accordion title="Bind Mounts — Local Development">
+Bind mounts are essential for development. They mirror your local folder inside the container — any code changes are reflected immediately without rebuilding the image.
+
+```bash Development with bind mount
+# Mount current folder inside container
+docker run -d \
+  --name app-dev \
+  -p 3000:3000 \
+  -v $(pwd):/app \
+  -v /app/node_modules \
+  node:20-alpine \
+  sh -c 'npm install && npm run dev'
+
+# What happened:
+# -v $(pwd):/app          = current host folder mapped to /app in container
+# -v /app/node_modules    = anonymous volume for node_modules (won't overwrite!)
+
+# On Windows PowerShell, use ${PWD} instead of $(pwd)
+docker run -v ${PWD}:/app ...
+```
+</Accordion>
+
+## Dockerfile
+
+Create your own custom images.
+
+<Accordion title="Dockerfile Instructions">
+| Instruction | What it does |
+|------------|-------------|
+| `FROM imagem:tag` | Defines base image. Always the first instruction. |
+| `WORKDIR /caminho` | Sets working directory inside container. |
+| `COPY origem destino` | Copies files from host to container. |
+| `ADD origem destino` | Like COPY, but supports URLs and automatically extracts tar files. |
+| `RUN comando` | Executes command during image BUILD (install packages, etc). |
+| `CMD ["cmd", "arg"]` | Default command when starting container. Can be overridden. |
+| `ENTRYPOINT ["cmd"]` | Fixed entry point of container. CMD becomes its arguments. |
+| `ENV VAR=VALOR` | Defines environment variable available at runtime. |
+| `ARG VAR=VALOR` | Variable available ONLY during build time. |
+| `EXPOSE porta` | Documents which port container will use (doesn't open automatically). |
+| `VOLUME /caminho` | Declares a volume mount point. |
+| `USER usuario` | Defines user that runs subsequent commands (security). |
+</Accordion>
+
+<Accordion title="Example Dockerfile">
+```dockerfile Multi-stage Node.js Dockerfile
+# ─────────────────────────────────────────────────────────────
+# STAGE 1: Install dependencies
+# ─────────────────────────────────────────────────────────────
+FROM node:20-alpine AS dependencies
+
+# Install native dependencies if necessary
+# (bcrypt, sharp and others need build tools)
+RUN apk add --no-cache python3 make g++
+
+WORKDIR /app
+
+# Copy ONLY dependency files first
+# This leverages Docker cache:
+# If package.json didn't change, this layer is reused
+COPY package.json package-lock.json ./
+
+# Install production dependencies
+RUN npm ci --only=production
+
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 2: Final image (smaller and more secure)
+# ─────────────────────────────────────────────────────────────
+FROM node:20-alpine
+
+# Create non-root user to run application (security!)
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+# Copy node_modules from previous stage
+COPY --from=dependencies /app/node_modules ./node_modules
+
+# Copy application code
+COPY . .
+
+# Change file owner to created user
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Document port (good practice, not mandatory)
+EXPOSE 3000
+
+# Environment variables with default values
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Check if application is healthy
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
+
+# Start application
+CMD ["node", "src/server.js"]
+```
+</Accordion>
+
+<Accordion title="Building and Publishing Images">
+```bash Build image
+# Build image with tag 'minha-app:1.0'
+docker build -t minha-app:1.0 .
+# The dot (.) indicates Dockerfile is in current folder
+
+# Use Dockerfile in different location
+docker build -f caminho/Dockerfile -t minha-app .
+
+# View layers and image size
+docker history minha-app:1.0
+```
+
+```bash Publish to Docker Hub
+# Login to Docker Hub
+docker login
+
+# Tag image with your Docker Hub username
+docker tag minha-app:1.0 seuusuario/minha-app:1.0
+
+# Push to Docker Hub
+docker push seuusuario/minha-app:1.0
+```
+</Accordion>
+
+## Docker Compose
+
+Tool to manage containers. Replaces `docker run` commands. Write everything in a YAML file and start services together.
+
+<Accordion title="docker-compose.yml Structure">
+A Compose file has four main sections: `version`, `services`, `volumes`, and `networks`.
+
+```yaml docker-compose.yml
+version: '3.8'
+
+# ─── SERVICES ─────────────────────────────────────────────────
+services:
+
+  # Each service is a container
+  nome-do-servico:
+    image: imagem:tag          # OR
+    build:                     # Build from Dockerfile
+      context: .               # Folder with Dockerfile
+      dockerfile: Dockerfile   # File name (if not 'Dockerfile')
+
+    container_name: meu-app   # Fixed container name
+
+    ports:
+      - "HOST:CONTAINER"      # Port mapping
+
+    environment:               # Environment variables
+      - VARIAVEL=valor
+      DATABASE_URL: postgres://user:senha@db/meudb
+
+    env_file:                  # Or load from .env file
+      - .env
+
+    volumes:                   # Volumes and bind mounts
+      - dados-nomeados:/var/dados
+      - ./pasta-local:/app
+
+    depends_on:               # Startup order
+      db:                     # Wait for 'db' to be 'healthy'
+        condition: service_healthy
+
+    restart: unless-stopped   # Restart policy
+
+    networks:                 # Networks to join
+      - minha-rede
+
+    healthcheck:              # Health check
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+
+# ─── NAMED VOLUMES ─────────────────────────────────────────
+volumes:
+  dados-nomeados:            # Volume managed by Docker
+  outro-volume:
+    external: true           # Externally created volume
+
+
+# ─── NETWORKS ────────────────────────────────────────────────
+networks:
+  minha-rede:
+    driver: bridge
+```
+</Accordion>
+
+<Accordion title="Docker Compose Commands">
+```bash Start services
+# Start all services in background
+docker compose up -d
+
+# Start and rebuild images (when Dockerfile/code changed)
+docker compose up -d --build
+
+# Start only specific service
+docker compose up -d nome-do-servico
+```
+
+```bash Stop services
+# Stop containers (keeps volumes and networks)
+docker compose stop
+
+# Stop and REMOVE containers and networks (volumes remain)
+docker compose down
+
+# Remove everything including volumes (CAREFUL: deletes data!)
+docker compose down -v
+```
+
+```bash Monitor
+# List project containers
+docker compose ps
+
+# View logs from all services
+docker compose logs
+
+# Follow logs in real-time
+docker compose logs -f
+
+# Logs from specific service
+docker compose logs -f app
+```
+
+```bash Execute commands
+# Open terminal in a service
+docker compose exec app bash
+
+# Execute one-off command
+docker compose exec db psql -U usuario -d meudb
+
+# Run one-off service (without starting others)
+docker compose run --rm app npm test
+```
+
+```bash Other commands
+# View final resolved configuration (variables substituted)
+docker compose config
+
+# Rebuild service without stopping others
+docker compose up -d --build app
+
+# Scale a service (create multiple instances)
+docker compose up -d --scale app=3
+```
+</Accordion>
+
+<Accordion title="Complete Example — Node.js + PostgreSQL + Redis">
+```yaml docker-compose.yml
+version: '3.8'
+
+services:
+
+  # ─── APPLICATION ───────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production      # Multi-stage build stage
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-net
+
+  # ─── DATABASE ──────────────────────────────────────────
+  db:
+    image: postgres:15-alpine
+    env_file: .env
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - app-net
+
+  # ─── CACHE ───────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --maxmemory 256mb
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-net
+
+  # ─── REVERSE PROXY ───────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - certbot-data:/etc/letsencrypt
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - app-net
+
+volumes:
+  postgres-data:
+  redis-data:
+  certbot-data:
+
+networks:
+  app-net:
+    driver: bridge
+```
+
+```yaml docker-compose.override.yml
+# docker-compose.override.yml
+# This file is automatically merged with docker-compose.yml
+# Use for development configs
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      target: development     # Use dev stage from Dockerfile
+    volumes:
+      - .:/app                # Bind mount for hot reload
+      - /app/node_modules     # Preserve container's node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev      # Override Dockerfile CMD
+
+  db:
+    ports:
+      - "5432:5432"          # Expose port to connect externally
+
+  redis:
+    ports:
+      - "6379:6379"
+```
+</Accordion>
+
+## Cleanup
+
+<Warning>
+Cleanup commands permanently delete data. Always check what will be removed before confirming.
+</Warning>
+
+```bash System cleanup
+# View Docker disk usage
+docker system df
+
+# General cleanup (removes unused containers, networks, images, build cache)
+docker system prune -a
+
+# Remove all stopped containers
+docker container prune
+
+# Remove unused images
+docker image prune -a
+
+# Remove unused volumes
+docker volume prune
+
+# Remove unused networks
+docker network prune
+```

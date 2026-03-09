@@ -1,0 +1,364 @@
+---
+title: 'Vue'
+description: 'Progressive JavaScript framework for building user interfaces'
+icon: 'vuejs'
+---
+
+Vue (pronounced **/vjuː/**, like *view*) is a **JavaScript framework** for building user interfaces. Like React, it shines in interactive applications.
+
+## What is Vue?
+
+Builds on top of standard HTML, CSS, and JavaScript, providing a **declarative and component-based** programming model.
+
+<CardGroup cols={2}>
+  <Card title="Declarative Rendering" icon="code">
+    Vue extends HTML with a template syntax that describes the output based on JavaScript state. What you write in the template directly reflects what appears on screen.
+  </Card>
+  
+  <Card title="Reactivity" icon="arrows-rotate">
+    Vue automatically tracks JavaScript state changes and efficiently updates the DOM — without you needing to do anything manually.
+  </Card>
+</CardGroup>
+
+## Setting Up with Vite
+
+| Command | Description |
+|---------|-------------|
+| `node -v` | Check if Node is installed. |
+| `npm create vue@latest` | Create Vue project with official installer (create-vue). Choose TypeScript, Router, Pinia, etc. |
+| `npm install` | Install project dependencies. |
+| `npm run dev` | Start development server. |
+
+<Info>
+Vue uses **create-vue** (based on Vite) as the official scaffolding tool, just like React uses Vite.
+</Info>
+
+## Single File Component (.vue)
+
+Vue uses **`.vue`** files called **SFC (Single File Component)**. It's the equivalent of `.jsx` in React.
+
+Each `.vue` file encapsulates the three parts of a component in one place:
+
+<Tabs>
+  <Tab title="Structure">
+    - `<script>` — JavaScript logic
+    - `<template>` — HTML structure
+    - `<style>` — CSS styles (optionally with `scoped`)
+  </Tab>
+  
+  <Tab title="Example">
+    ```vue MyComponent.vue
+    <script setup>
+    import { ref } from 'vue'
+    const count = ref(0)
+    </script>
+
+    <template>
+      <button @click="count++">
+        Clicks: {{ count }}
+      </button>
+    </template>
+
+    <style scoped>
+    button { font-weight: bold; }
+    </style>
+    ```
+  </Tab>
+</Tabs>
+
+<Tip>
+The `scoped` in style makes CSS only affect that component, without leaking to others.
+</Tip>
+
+## API Styles: Options vs Composition
+
+Vue has two ways to write components. Both work — they're different interfaces over the same underlying system.
+
+<Tabs>
+  <Tab title="Options API">
+    Defines component logic via an **object of options** (`data`, `methods`, `mounted`...). More familiar for those coming from object-oriented programming.
+
+    ```vue
+    <script>
+    export default {
+      data() {
+        return { count: 0 }
+      },
+      methods: {
+        increment() {
+          this.count++
+        }
+      },
+      mounted() {
+        console.log(this.count)
+      }
+    }
+    </script>
+    ```
+  </Tab>
+  
+  <Tab title="Composition API (Recommended)">
+    Defines logic using **imported functions** from Vue. With `<script setup>`, everything you declare is automatically available in the template.
+
+    ```vue
+    <script setup>
+    import { ref, onMounted } from 'vue'
+
+    const count = ref(0)
+
+    function increment() {
+      count.value++
+    }
+
+    onMounted(() => {
+      console.log(count.value)
+    })
+    </script>
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+For new projects, prefer **Composition API + `<script setup>`**. Options API is more common in legacy projects or for those coming from OOP.
+</Warning>
+
+## Reactivity: `ref` and `reactive`
+
+In Vue, the equivalent of React's `useState` is `ref()`. When the value changes, the interface updates automatically.
+
+<Tabs>
+  <Tab title="ref()">
+    For simple values (string, number, boolean). To change, use `.value` in script — in template, Vue accesses automatically without `.value`.
+
+    ```vue
+    <script setup>
+    import { ref } from 'vue'
+
+    const name = ref('Felipe')
+    const count = ref(0)
+
+    // in script: use .value
+    count.value++
+    </script>
+
+    <template>
+      <!-- in template: no .value -->
+      {{ count }}
+    </template>
+    ```
+  </Tab>
+  
+  <Tab title="reactive()">
+    For complete objects. Doesn't need `.value` — access properties directly. Better for grouping related states.
+
+    ```vue
+    <script setup>
+    import { reactive } from 'vue'
+
+    const user = reactive({
+      name: 'Felipe',
+      age: 25
+    })
+
+    // change directly, no .value
+    user.age = 26
+    </script>
+
+    <template>
+      {{ user.name }}
+    </template>
+    ```
+  </Tab>
+</Tabs>
+
+## Template Syntax
+
+Vue's template uses HTML with special directives. In React you use JSX with pure JavaScript — in Vue you use attributes prefixed with `v-` or symbols like `@` and `:`.
+
+| Syntax | React Equivalent | Description |
+|--------|------------------|-------------|
+| `{{ value }}` | `{value}` | Interpolates a reactive value in HTML. |
+| `v-bind:href` or `:href` | `href={value}` | Binds an attribute to a reactive value. |
+| `v-on:click` or `@click` | `onClick={fn}` | Listens to DOM events. |
+| `v-if` / `v-else` | `{cond && <El />}` | Conditional rendering. |
+| `v-for` | `{arr.map(...)}` | Renders a list of elements. |
+| `v-model` | `value + onChange` | Two-way binding in inputs — binds and updates state automatically. |
+
+<CodeGroup>
+```vue Attribute Binding
+<p :class="active ? 'green' : 'gray'">Text</p>
+```
+
+```vue Two-way Binding
+<input v-model="name" />
+```
+
+```vue List Rendering
+<li v-for="item in list" :key="item.id">
+  {{ item.name }}
+</li>
+```
+
+```vue Conditional
+<div v-if="loggedIn">Welcome!</div>
+```
+
+```vue Event Handling
+<button @click="save">Save</button>
+```
+</CodeGroup>
+
+## Props
+
+Just like in React, props pass data from parent component to child. In Vue with Composition API, you declare them with `defineProps()`.
+
+To emit events back to the parent (like a callback), use `defineEmits()` — the equivalent of passing a function as a prop in React.
+
+<CodeGroup>
+```vue Child: TaskItem.vue
+<script setup>
+const props = defineProps({
+  title: String,
+  done: Boolean
+})
+
+const emit = defineEmits(['delete'])
+</script>
+```
+
+```vue Parent: App.vue
+<template>
+  <TaskItem
+    :title="task.title"
+    :done="task.done"
+    @delete="removeTask"
+  />
+</template>
+```
+</CodeGroup>
+
+<Warning>
+Props are **read-only** — never modify a prop directly in the child component.
+</Warning>
+
+## Lifecycle Hooks
+
+The equivalent of React's `useEffect(fn, [])` (execute on mount) is Vue's `onMounted()`.
+
+| Vue Hook | React Equivalent | When Called |
+|----------|------------------|-------------|
+| `onMounted()` | `useEffect(fn, [])` | After component is inserted in DOM. |
+| `onUpdated()` | `useEffect(fn, [dep])` | After a reactive update re-renders the component. |
+| `onUnmounted()` | `useEffect(() => () => cleanup, [])` | When component is removed from DOM. Ideal for cleaning timers and listeners. |
+
+```vue
+<script setup>
+import { ref, onMounted } from 'vue'
+
+const tasks = ref([])
+
+onMounted(async () => {
+  const res = await fetch('https://jsonplaceholder.typicode.com/todos?_limit=10')
+  tasks.value = await res.json()
+})
+</script>
+```
+
+<Tip>
+Unlike React, inside `onMounted` you can use `async` directly — without needing to create an internal function.
+</Tip>
+
+## Computed Properties
+
+A value derived from reactive state. Vue automatically recalculates when the dependency changes — and caches it until it actually changes.
+
+Equivalent to React's `useMemo()`, but without manually declaring dependencies.
+
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+
+const tasks = ref([...])
+
+// recalculates only when tasks change
+const completed = computed(() => {
+  return tasks.value.filter(t => t.done)
+})
+</script>
+
+<template>
+  {{ completed.length }} tasks completed
+</template>
+```
+
+<Warning>
+Don't use `computed` for actions with side effects (API calls, changing state). For that, use `watch`.
+</Warning>
+
+## Watchers
+
+The `watch` executes a function every time a reactive value changes — equivalent to React's `useEffect(fn, [dep])`.
+
+Use when you need to react to changes with side effects: save to localStorage, call APIs, start animations.
+
+```vue
+<script setup>
+import { ref, watch } from 'vue'
+
+const tasks = ref([])
+
+// runs every time tasks change
+watch(tasks, (newValue) => {
+  localStorage.setItem(
+    'tasks',
+    JSON.stringify(newValue)
+  )
+}, { deep: true })
+</script>
+```
+
+<Tip>
+The `{ deep: true }` makes Vue observe changes inside nested objects and arrays.
+</Tip>
+
+## Routing with Vue Router
+
+The equivalent of React Router Dom is **Vue Router** — Vue's official routing library.
+
+**Install:** `npm install vue-router@4`
+
+| Vue Router | React Router Equivalent | Use |
+|------------|-------------------------|-----|
+| `createRouter()` | `createBrowserRouter()` | Creates router with route list. |
+| `<RouterView />` | `RouterProvider` | Where the current route's page/component is rendered. |
+| `<RouterLink />` | `<Link />` | Navigation link without page reload. |
+| `useRouter()` | `useNavigate()` | Navigate programmatically between routes. |
+| `useRoute()` | `useSearchParams()` | Access params and query from current route. |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Global State" icon="layer-group">
+    **Pinia** is Vue's official state management library — equivalent to Redux/Zustand in React. Simpler and more modern than Vuex (old standard).
+  </Card>
+  
+  <Card title="Forms" icon="file-lines">
+    VeeValidate + Zod or Yup for complex form validation.
+  </Card>
+  
+  <Card title="Data Fetching" icon="database">
+    VueUse (collection of utility composables) or TanStack Query (same lib as React Query, but for Vue).
+  </Card>
+  
+  <Card title="Testing" icon="flask">
+    Vitest + Vue Testing Library + Cypress for e2e tests.
+  </Card>
+  
+  <Card title="Vue on Server" icon="server">
+    **Nuxt.js** is the Vue framework for SSR/SSG — equivalent to Next.js for React. Vue market standard.
+  </Card>
+  
+  <Card title="UI Components" icon="palette">
+    Vuetify, PrimeVue, or shadcn-vue for ready-made component libraries.
+  </Card>
+</CardGroup>

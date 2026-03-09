@@ -1,0 +1,243 @@
+---
+title: 'SQL'
+description: 'Structured Query Language reference for database operations'
+icon: 'database'
+---
+
+SQL (Structured Query Language) is the standard language for managing and manipulating relational databases.
+
+<Info>
+This page is currently being developed. Check back soon for comprehensive SQL documentation.
+</Info>
+
+## Overview
+
+SQL is used to:
+- Query data from databases
+- Insert, update, and delete records
+- Create and modify database structures
+- Control access to data
+- Manage transactions
+
+## Coming Soon
+
+This documentation will cover:
+
+<CardGroup cols={2}>
+  <Card title="Basic Queries" icon="magnifying-glass">
+    SELECT statements, filtering with WHERE, sorting with ORDER BY
+  </Card>
+  
+  <Card title="Data Manipulation" icon="pen-to-square">
+    INSERT, UPDATE, DELETE operations and best practices
+  </Card>
+  
+  <Card title="Joins & Relations" icon="link">
+    INNER JOIN, LEFT JOIN, RIGHT JOIN, and complex relationships
+  </Card>
+  
+  <Card title="Advanced Topics" icon="brain">
+    Subqueries, CTEs, window functions, and optimization
+  </Card>
+</CardGroup>
+
+## Quick Reference
+
+### Basic SELECT
+
+```sql Query all columns
+SELECT * FROM users;
+```
+
+```sql Query specific columns
+SELECT name, email FROM users;
+```
+
+```sql Filter results
+SELECT * FROM users WHERE age > 18;
+```
+
+```sql Sort results
+SELECT * FROM users ORDER BY name ASC;
+```
+
+### Data Manipulation
+
+```sql Insert data
+INSERT INTO users (name, email, age) 
+VALUES ('John Doe', 'john@example.com', 25);
+```
+
+```sql Update data
+UPDATE users 
+SET email = 'newemail@example.com' 
+WHERE id = 1;
+```
+
+```sql Delete data
+DELETE FROM users WHERE id = 1;
+```
+
+### Table Operations
+
+```sql Create table
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  age INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+```sql Alter table
+ALTER TABLE users ADD COLUMN phone VARCHAR(20);
+```
+
+```sql Drop table
+DROP TABLE IF EXISTS users;
+```
+
+## Common Patterns
+
+<Accordion title="Pagination">
+```sql Paginate results
+SELECT * FROM users 
+ORDER BY id 
+LIMIT 10 OFFSET 20;
+```
+
+This retrieves 10 users starting from the 21st record (useful for pagination).
+</Accordion>
+
+<Accordion title="Count Records">
+```sql Count all records
+SELECT COUNT(*) FROM users;
+```
+
+```sql Count with condition
+SELECT COUNT(*) FROM users WHERE age > 18;
+```
+
+```sql Group by and count
+SELECT country, COUNT(*) as user_count 
+FROM users 
+GROUP BY country;
+```
+</Accordion>
+
+<Accordion title="Search Patterns">
+```sql Exact match
+SELECT * FROM users WHERE name = 'John Doe';
+```
+
+```sql Pattern matching
+SELECT * FROM users WHERE name LIKE 'John%';
+```
+
+```sql Case-insensitive search (PostgreSQL)
+SELECT * FROM users WHERE name ILIKE '%john%';
+```
+</Accordion>
+
+## Database-Specific Dialects
+
+<Note>
+SQL syntax can vary slightly between database systems (PostgreSQL, MySQL, SQLite, SQL Server). Always check your specific database documentation for exact syntax.
+</Note>
+
+<Tabs>
+  <Tab title="PostgreSQL">
+    PostgreSQL is a powerful, open-source object-relational database system.
+    
+    ```sql PostgreSQL-specific features
+    -- Serial auto-increment
+    CREATE TABLE users (
+      id SERIAL PRIMARY KEY
+    );
+    
+    -- JSON support
+    SELECT data->>'name' FROM users;
+    
+    -- Array types
+    SELECT * FROM posts WHERE 'sql' = ANY(tags);
+    ```
+  </Tab>
+  
+  <Tab title="MySQL">
+    MySQL is one of the most popular open-source databases.
+    
+    ```sql MySQL-specific features
+    -- Auto-increment
+    CREATE TABLE users (
+      id INT AUTO_INCREMENT PRIMARY KEY
+    );
+    
+    -- Limit syntax
+    SELECT * FROM users LIMIT 10;
+    ```
+  </Tab>
+  
+  <Tab title="SQLite">
+    SQLite is a lightweight, file-based database.
+    
+    ```sql SQLite-specific features
+    -- Auto-increment
+    CREATE TABLE users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT
+    );
+    
+    -- Simpler syntax, fewer data types
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Use Indexes" icon="gauge-high">
+    Create indexes on frequently queried columns to improve performance.
+  </Card>
+  
+  <Card title="Avoid SELECT *" icon="asterisk">
+    Select only the columns you need to reduce data transfer and improve performance.
+  </Card>
+  
+  <Card title="Use Transactions" icon="arrows-rotate">
+    Wrap related operations in transactions to ensure data consistency.
+  </Card>
+  
+  <Card title="Parameterize Queries" icon="shield">
+    Always use parameterized queries to prevent SQL injection attacks.
+  </Card>
+</CardGroup>
+
+## Security
+
+<Warning>
+**Never** concatenate user input directly into SQL queries. This opens your application to SQL injection attacks.
+</Warning>
+
+<CodeGroup>
+```javascript Bad - SQL Injection Vulnerable
+// DON'T DO THIS!
+const query = `SELECT * FROM users WHERE email = '${userInput}'`;
+```
+
+```javascript Good - Parameterized Query
+// DO THIS INSTEAD
+const query = 'SELECT * FROM users WHERE email = $1';
+const result = await db.query(query, [userInput]);
+```
+</CodeGroup>
+
+## Resources
+
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [MySQL Documentation](https://dev.mysql.com/doc/)
+- [SQLite Documentation](https://www.sqlite.org/docs.html)
+- [SQL Tutorial - W3Schools](https://www.w3schools.com/sql/)
+
+<Note>
+This page will be expanded with more comprehensive examples, advanced queries, performance optimization tips, and database-specific features. Stay tuned for updates!
+</Note>
