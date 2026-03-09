@@ -1,0 +1,104 @@
+{
+  "projectType": "general",
+  "projectName": "Chokmah",
+  "projectDescription": "A personal knowledge repository serving as a second brain for web development learning resources",
+  "theme": "almond",
+  "primaryColor": "#FFC107",
+  "lightColor": "#FFD54F",
+  "darkColor": "#FFA000",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Overview",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "about"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Frontend",
+        "groups": [
+          {
+            "group": "Fundamentals",
+            "pages": [
+              "frontend/html"
+            ]
+          },
+          {
+            "group": "Frameworks & Libraries",
+            "pages": [
+              "frontend/react",
+              "frontend/vue"
+            ]
+          },
+          {
+            "group": "Styling",
+            "pages": [
+              "frontend/tailwind"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Backend",
+        "groups": [
+          {
+            "group": "Web Frameworks",
+            "pages": [
+              "backend/flask"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tools",
+        "groups": [
+          {
+            "group": "Development Tools",
+            "pages": [
+              "tools/git",
+              "tools/docker",
+              "tools/vite",
+              "tools/sql"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Resources",
+        "groups": [
+          {
+            "group": "Learning Materials",
+            "pages": [
+              "resources/articles",
+              "resources/courses"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Frontend development guides (HTML, React, Vue, Tailwind)",
+    "Backend development with Flask",
+    "Developer tools references (Git, Docker, Vite, SQL)",
+    "Curated learning resources and courses",
+    "Personal portfolio and project showcase"
+  ],
+  "publicApiSurface": [
+    "HTML elements and attributes reference",
+    "React components and hooks patterns",
+    "Vue composition API examples",
+    "Tailwind CSS utility classes",
+    "Flask application structure",
+    "Git commands and workflows",
+    "Docker containerization guide",
+    "SQL queries and database operations",
+    "Vite configuration and build tools"
+  ]
+}
