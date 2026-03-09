@@ -40,6 +40,108 @@ Learn React once and use it on any platform.
 The dot `.` in the command creates the project inside the current folder without creating a subfolder.
 </Info>
 
+## Project Structure
+
+Understanding the file structure of a React project is essential. Here are the key files you'll work with:
+
+<AccordionGroup>
+<Accordion title="package.json">
+Standard configuration file for any Node.js project. It contains:
+
+- **Scripts**: Available commands like `dev`, `build`, etc.
+- **Dependencies**: Packages required for the project to run
+- **devDependencies**: Development-only packages
+
+When you run `npm install`, npm reads this file and installs everything listed.
+
+```json package.json
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}
+```
+</Accordion>
+
+<Accordion title="index.html">
+The only HTML file in the application. It serves as a **shell** with no real content.
+
+It contains a `<div id="root"></div>` where React will **inject the entire application** via JavaScript. It also loads `main.jsx`, which is React's entry point.
+
+```html index.html
+<body>
+  <div id="root"></div>
+  <!-- empty, React fills it here -->
+
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+```
+</Accordion>
+
+<Accordion title="main.jsx">
+The **entry point** of the React application. Responsible for rendering the root component (`App`) inside the `div#root` from the HTML.
+
+This is also where you configure **React Router** (RouterProvider) when used. You rarely need to edit this file in day-to-day development.
+
+```jsx src/main.jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+
+ReactDOM
+  .createRoot(document.getElementById('root'))
+  .render(<App />)
+```
+</Accordion>
+
+<Accordion title="App.jsx">
+The **root component** of the application — the first component React renders.
+
+Functions as the **central point** where you organize other components and manage main application states. It's common to keep **global states** here and pass data to children via props.
+
+```jsx src/App.jsx
+import { useState } from 'react'
+import Tasks from './components/Tasks'
+
+function App() {
+  const [tasks, setTasks] = useState([])
+
+  return <Tasks tasks={tasks} />
+}
+
+export default App
+```
+</Accordion>
+
+<Accordion title="Folder Structure">
+There's no mandatory structure, but the most common convention separates code into folders inside `src/`:
+
+- **`components/`** — Reusable UI pieces (buttons, cards, lists, etc.)
+- **`pages/`** — Components that represent a full route/page
+
+Component files always use the `.jsx` extension and **PascalCase** naming (e.g., `AddTask.jsx`, `TaskPage.jsx`).
+
+```
+📁 src/
+  📁 components/
+    AddTask.jsx
+    Tasks.jsx
+  📁 pages/
+    TaskPage.jsx
+  App.jsx
+  main.jsx
+  index.css
+index.html
+package.json
+```
+</Accordion>
+</AccordionGroup>
+
 ## Single Page Application (SPA)
 
 <Tabs>
